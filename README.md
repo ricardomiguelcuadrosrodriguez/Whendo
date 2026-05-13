@@ -334,7 +334,7 @@ Star ⭐ the repo if you find this useful — it's the only metric I care about.
 
 ## 📜 License
 
-MIT © Ricardo Cuadros
+MIT © Ricardo Miguel Cuadros Rodriguez
 
 ---
 

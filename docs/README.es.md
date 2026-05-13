@@ -227,7 +227,7 @@ Dale ⭐ al repo si te sirve — es la única métrica que me importa.
 
 ## 📜 Licencia
 
-MIT © Ricardo Cuadros
+MIT © Ricardo Miguel Cuadros Rodriguez
 
 ---
 
