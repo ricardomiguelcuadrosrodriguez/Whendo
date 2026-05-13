@@ -20,7 +20,7 @@
 
 ## 🤔 ¿Qué es esto?
 
-**whendo** corre en tu máquina y hace cosas por ti según un horario, cuando se cumple una condición, o cuando algo cambia en el mundo. Le describes qué querés en un archivo YAML chiquito. whendo se encarga del resto.
+**whendo** corre en tu máquina y hace cosas por ti según un horario, cuando se cumple una condición, o cuando algo cambia en el mundo. Le describes qué quieres en un pequeño archivo YAML. whendo se encarga del resto.
 
 ```yaml
 # recipes/aviso-lluvia.yaml
@@ -40,7 +40,7 @@ Guardás el archivo. whendo lo levanta. Listo.
 
 ## 🎯 ¿Por qué whendo?
 
-Zapier es para empresas. IFTTT se murió. n8n es exagerado. **whendo es para vos.**
+Zapier es para empresas. IFTTT se murió. n8n es exagerado. **whendo es para ti.**
 
 - 🧠 **YAML o lenguaje natural** (parser LLM próximamente)
 - 🏠 **Self-hosted** — tu data, tu servidor, tus reglas
@@ -61,7 +61,7 @@ Necesitas **dos terminales** abiertas. Backend y frontend corren como servicios 
 - **Node.js 20+**
 - **Git**
 
-Verificá qué tenés:
+Verifica qué tienes:
 ```bash
 python3 --version
 node --version
@@ -145,7 +145,7 @@ En el navegador:
 1. Vas a ver la recipe **Rain warning - Lima** como una card
 2. Click en **`run now`** para dispararla manualmente
 3. Click en el tab **`runs`** para ver el historial de ejecuciones
-4. Agregá un nuevo archivo YAML en `recipes/` y dale click a **`reload`** para que lo levante
+4. Agrega un nuevo archivo YAML en `recipes/` y haz clic en **`reload`** para que lo cargue
 
 ### Para detener todo
 
@@ -192,11 +192,11 @@ which python  # debería apuntar a .venv/bin/python
 <details>
 <summary><b>La web muestra "Could not reach backend"</b></summary>
 
-El frontend no puede hablar con el backend. Asegurate de que la Terminal 1 sigue corriendo y verificá:
+El frontend no puede comunicarse con el backend. Asegúrate de que la Terminal 1 sigue corriendo y verifica:
 ```bash
 curl http://localhost:8000/health
 ```
-Si eso falla, el backend se cayó — mirá los logs en Terminal 1.
+Si eso falla, el backend se cayó — revisa los logs en Terminal 1.
 </details>
 
 <details>

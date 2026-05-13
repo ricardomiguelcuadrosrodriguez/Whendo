@@ -13,7 +13,7 @@
 
 **A self-hosted automation tool for your personal life — not your business.**
 
-[Quickstart](#-quickstart) • [Examples](#-examples) • [How it works](#-how-it-works) • [🇪🇸 Español](./docs/README.es.md)
+[Quickstart](#-quickstart) • [Examples](#-examples) • [How it works](#-how-it-works) • [🇵🇪 Español](./docs/README.es.md)
 
 </div>
 

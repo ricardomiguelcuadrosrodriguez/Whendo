@@ -212,12 +212,12 @@ export const TRANSLATIONS: Translations = {
     "recipes.failed_to_load": "automatización(es) no se cargaron",
     "recipes.empty.title": "Todavía no hay automatizaciones.",
     "recipes.empty.hint1":
-      "Dale click a 'nueva automatización' para crear la primera.",
+      "Haz clic en 'nueva automatización' para crear la primera.",
     "recipes.empty.hint2":
-      "O tirá un archivo .yaml en la carpeta recipes/ y dale a recargar.",
+      "O coloca un archivo .yaml en la carpeta recipes/ y haz clic en recargar.",
     "recipes.backend_down.title": "No se pudo conectar al servidor",
     "recipes.backend_down.hint":
-      "¿Está corriendo el backend en localhost:8000? Probá 'make dev' en otra terminal.",
+      "¿Está corriendo el backend en localhost:8000? Prueba 'make dev' en otra terminal.",
     "recipes.new": "nueva automatización",
     "card.next": "próx.:",
     "card.run_now": "ejecutar",
@@ -227,7 +227,7 @@ export const TRANSLATIONS: Translations = {
     "runs.refresh": "refrescar",
     "runs.empty.title": "Todavía no hay ejecuciones.",
     "runs.empty.hint":
-      "Las automatizaciones se ejecutan cuando dispara su horario, o las podés correr manualmente desde la página de automatizaciones.",
+      "Las automatizaciones se ejecutan cuando dispara su horario, o las puedes ejecutar manualmente desde la página de automatizaciones.",
     "runs.could_not_load": "No se pudieron cargar las ejecuciones",
     "runs.status": "estado",
     "runs.started_at": "inició",
@@ -249,7 +249,7 @@ export const TRANSLATIONS: Translations = {
     "form.enabled": "Activa",
     "form.section_when": "¿Cuándo debe ejecutarse?",
     "form.section_when_help":
-      "Elegí un horario, un webhook, o que corra una vez al iniciar.",
+      "Elige un horario, un webhook, o que corra una vez al iniciar.",
     "form.when_every": "Con un horario",
     "form.when_webhook": "Cuando se llama un webhook",
     "form.when_on_startup": "Una vez al iniciar el servidor",
@@ -261,17 +261,17 @@ export const TRANSLATIONS: Translations = {
       "Se ejecuta una vez cada vez que arranca el servidor de whendo.",
     "form.section_if": "¿Chequear algo primero? (opcional)",
     "form.section_if_help":
-      "Solo ejecutar la acción si se cumple una condición. Dejá vacío para que siempre corra.",
+      "Solo ejecutar la acción si se cumple una condición. Deja vacío para que siempre se ejecute.",
     "form.source_none": "Siempre ejecutar (sin condición)",
     "form.source_config": "Configuración de la fuente",
     "form.source_config_hint":
-      "Configurá la fuente en YAML. Cada fuente tiene sus propios campos.",
+      "Configura la fuente en YAML. Cada fuente tiene sus propios campos.",
     "form.section_then": "¿Qué debe hacer?",
     "form.section_then_help":
       "La acción que se ejecuta cuando dispara la automatización.",
     "form.action_config": "Configuración de la acción",
     "form.action_config_hint":
-      "Configurá la acción en YAML. Los campos disponibles dependen de la acción.",
+      "Configura la acción en YAML. Los campos disponibles dependen de la acción.",
     // Nombres amigables para fuentes
     "source.weather": "Pronóstico del clima",
     "source.rss": "Feed RSS",
