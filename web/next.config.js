@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  devIndicators: false,
   // Proxy /api/* to the backend so we don't deal with CORS in dev.
   async rewrites() {
     return [
