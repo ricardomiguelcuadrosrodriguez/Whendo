@@ -1,0 +1,51 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Data
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# User recipes (recipes/ is meant to be local per install)
+recipes/
+!recipes/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker/

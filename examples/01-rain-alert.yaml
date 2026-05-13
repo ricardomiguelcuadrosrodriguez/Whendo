@@ -1,0 +1,15 @@
+name: "Rain warning - Lima"
+description: "Sends a Telegram message if it's going to rain in Lima today"
+enabled: true
+
+when:
+  every: "day at 7am"
+
+if:
+  weather:
+    location: "Lima, PE"
+    condition: "rain_today"
+
+then:
+  notify_telegram:
+    message: "☔ Hoy llueve en Lima. Lleva casaca y zapatos cerrados."

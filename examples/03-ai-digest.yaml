@@ -1,0 +1,22 @@
+name: "Monday AI digest"
+description: "Summarizes the top AI news from the weekend every Monday morning"
+enabled: true
+
+when:
+  every: "monday at 9am"
+
+if:
+  rss:
+    url: "https://news.smol.ai/rss.xml"
+    since: "last_run"
+    max_items: 30
+
+then:
+  llm_summarize_and_notify:
+    channel: "email"
+    to: "you@example.com"
+    subject: "🤖 AI digest — {{ now | date }}"
+    prompt: |
+      Pick the 3 most interesting items below.
+      For each, write 1 sentence in plain English. Don't hype things up.
+      End with one practical takeaway for an indie developer.

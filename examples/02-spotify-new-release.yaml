@@ -1,0 +1,18 @@
+name: "New from Morat"
+description: "Alerts on new Morat releases on Spotify"
+enabled: true
+
+when:
+  every: "12 hours"
+
+if:
+  spotify_new_release:
+    artist: "Morat"
+    types: ["album", "single"]
+
+then:
+  notify_telegram:
+    message: |
+      🎵 Nuevo de Morat!
+      {{ release.name }} ({{ release.type }})
+      {{ release.url }}

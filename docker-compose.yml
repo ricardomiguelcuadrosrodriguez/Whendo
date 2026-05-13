@@ -1,0 +1,36 @@
+services:
+  whendo-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: whendo-server
+    restart: unless-stopped
+    ports:
+      - "${WHENDO_PORT:-8000}:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./recipes:/app/recipes
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  whendo-web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: whendo-web
+    restart: unless-stopped
+    ports:
+      - "${WHENDO_WEB_PORT:-3000}:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://whendo-server:8000
+    depends_on:
+      - whendo-server
+
+volumes:
+  data:
+  recipes:
