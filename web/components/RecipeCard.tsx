@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { api, type RecipeSummary } from "@/lib/api";
+import { useLocale } from "@/lib/locale-context";
 import { cn, formatRelativeTime } from "@/lib/utils";
 
 type Props = {
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export function RecipeCard({ recipe, onRunComplete }: Props) {
+  const { t } = useLocale();
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -55,7 +57,6 @@ export function RecipeCard({ recipe, onRunComplete }: Props) {
         !recipe.enabled && "opacity-60",
       )}
     >
-      {/* Top row: name + status */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h3 className="truncate font-mono text-base font-medium text-ink">
@@ -73,7 +74,6 @@ export function RecipeCard({ recipe, onRunComplete }: Props) {
         />
       </div>
 
-      {/* Pipeline visualization: trigger → source → action */}
       <div className="mt-4 flex flex-wrap items-center gap-2 font-mono text-xs">
         <span className="flex items-center gap-1.5 rounded border border-border bg-bg px-2 py-1 text-ink-dim">
           <TriggerIcon className="h-3 w-3" />
@@ -95,10 +95,9 @@ export function RecipeCard({ recipe, onRunComplete }: Props) {
         </span>
       </div>
 
-      {/* Bottom row: next run + actions */}
       <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs">
         <div className="text-ink-dim">
-          <span className="text-ink-muted">next: </span>
+          <span className="text-ink-muted">{t("card.next")} </span>
           <span className="font-mono text-ink">
             {formatRelativeTime(recipe.next_run)}
           </span>
@@ -119,7 +118,7 @@ export function RecipeCard({ recipe, onRunComplete }: Props) {
           ) : (
             <Play className="h-3 w-3" />
           )}
-          {feedback === "queued" ? "queued ✓" : "run now"}
+          {feedback === "queued" ? t("card.queued") : t("card.run_now")}
         </button>
       </div>
 

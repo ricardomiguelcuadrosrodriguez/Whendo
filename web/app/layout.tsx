@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Geist } from "next/font/google";
+
+import { LocaleProvider } from "@/lib/locale-context";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -34,7 +36,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jetbrainsMono.variable} ${geistSans.variable}`}>
       <body className="min-h-screen">
-        <div className="relative z-10">{children}</div>
+        <LocaleProvider>
+          <div className="relative z-10">{children}</div>
+        </LocaleProvider>
       </body>
     </html>
   );

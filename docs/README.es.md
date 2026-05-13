@@ -8,10 +8,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Hecho con FastAPI](https://img.shields.io/badge/Hecho%20con-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+[![Self-hosted](https://img.shields.io/badge/100%25-self--hosted-success.svg)](#-empezar)
 
 **Herramienta de automatización self-hosted para tu vida personal — no para tu negocio.**
 
-[Empezar](#empezar-en-60-segundos) • [Ejemplos](#ejemplos) • [Cómo funciona](#cómo-funciona) • [English](../README.md)
+[Empezar](#-empezar) • [Ejemplos](#-ejemplos) • [Cómo funciona](#-cómo-funciona) • [🇺🇸 English](../README.md)
 
 </div>
 
@@ -37,49 +38,192 @@ then:
 
 Guardás el archivo. whendo lo levanta. Listo.
 
-¿No te gusta YAML? Describílo en lenguaje natural y el parser lo escribe por vos:
-
-```bash
-$ whendo new "avísame por telegram cuando llueva en lima"
-✓ Recipe creada: recipes/aviso-lluvia.yaml
-```
-
 ## 🎯 ¿Por qué whendo?
 
 Zapier es para empresas. IFTTT se murió. n8n es exagerado. **whendo es para vos.**
 
-- 🧠 **Español llano o YAML** — vos elegís, ambos funcionan
+- 🧠 **YAML o lenguaje natural** (parser LLM próximamente)
 - 🏠 **Self-hosted** — tu data, tu servidor, tus reglas
-- 🆓 **Gratis para siempre** — código abierto, MIT
+- 🆓 **Gratis para siempre** — código abierto, MIT, sin cuentas
 - 🐳 **Un solo comando** — `docker compose up`
-- 🔌 **Trae tu propio LLM** — Claude (default), OpenAI, o todo local con Ollama
-- 📱 **Notifica donde sea** — Telegram, WhatsApp, email, ntfy, Discord
-- 🌎 **Pensado para la vida real** — clima, RSS, YouTube, Spotify, precios, scraping
+- 🔌 **Trae tu propio LLM** — Claude, OpenAI, o Ollama local
+- 📱 **Notifica donde sea** — Telegram, ntfy, email, Discord, webhooks
 
-## ⚡ Empezar en 60 segundos
+---
 
+## ⚡ Empezar
+
+Necesitas **dos terminales** abiertas. Backend y frontend corren como servicios separados.
+
+### Requisitos previos
+
+- **Python 3.10+** (3.12 recomendado)
+- **Node.js 20+**
+- **Git**
+
+Verificá qué tenés:
 ```bash
-git clone https://github.com/ricardomiguelcuadrosrodriguez/whendo
-cd whendo
-cp .env.example .env   # agregá tu API key de Claude + token de bot de Telegram
-docker compose up
+python3 --version
+node --version
+git --version
 ```
 
-Abrí `http://localhost:3000` y listo. Tirá un archivo `.yaml` en `recipes/` y whendo lo correrá.
+### Paso 1 — Clonar el repo
 
-> 💡 **¿Sin API key?** whendo funciona 100% offline con [Ollama](https://ollama.com). Poné `LLM_PROVIDER=ollama` en `.env`.
+```bash
+git clone https://github.com/ricardomiguelcuadrosrodriguez/Whendo.git
+cd Whendo
+```
+
+### Paso 2 — Configurar el backend (Terminal 1)
+
+```bash
+# Crear un entorno virtual de Python (para no contaminar el sistema)
+python3 -m venv .venv
+source .venv/bin/activate
+# Deberías ver (.venv) en tu prompt ahora
+
+# Instalar las dependencias del backend
+pip install -r server/requirements.txt
+
+# Crear tu archivo de configuración
+cp .env.example .env
+
+# Crear las carpetas que el servidor necesita
+mkdir -p recipes data
+
+# Copiar una recipe de ejemplo para que tenga algo que cargar
+cp examples/01-rain-alert.yaml recipes/
+
+# ¡Arrancá el servidor!
+make dev
+```
+
+Si todo funcionó, vas a ver:
+```
+INFO whendo — whendo starting (tz=America/Lima)
+INFO server.scheduler.loader — Loaded recipe 'Rain warning - Lima'
+INFO server.scheduler.engine — Scheduled 'Rain warning - Lima': day at 7am
+INFO Application startup complete.
+INFO Uvicorn running on http://0.0.0.0:8000
+```
+
+✅ El backend está corriendo en **http://localhost:8000**.
+
+Verificá con `curl`:
+```bash
+curl http://localhost:8000/health
+# → {"status":"ok"}
+```
+
+### Paso 3 — Configurar el frontend (Terminal 2)
+
+Abrí una **segunda terminal** (¡no cierres la primera!):
+
+```bash
+cd ~/ruta/a/Whendo
+
+# Instalar las dependencias del frontend (tarda 2-3 min la primera vez)
+make install-web
+
+# Arrancar el servidor de desarrollo de Next.js
+make dev-web
+```
+
+Vas a ver:
+```
+▲ Next.js 15.1.0
+- Local:  http://localhost:3000
+✓ Ready in 2.1s
+```
+
+✅ Abrí **http://localhost:3000** en tu navegador. 🎉
+
+### Paso 4 — Probálo
+
+En el navegador:
+1. Vas a ver la recipe **Rain warning - Lima** como una card
+2. Click en **`run now`** para dispararla manualmente
+3. Click en el tab **`runs`** para ver el historial de ejecuciones
+4. Agregá un nuevo archivo YAML en `recipes/` y dale click a **`reload`** para que lo levante
+
+### Para detener todo
+
+En cada terminal: **Ctrl + C**
+
+### Para reiniciar después
+
+```bash
+# Terminal 1
+cd ~/ruta/a/Whendo
+source .venv/bin/activate
+make dev
+
+# Terminal 2
+cd ~/ruta/a/Whendo
+make dev-web
+```
+
+---
+
+## 🐛 Solución de problemas
+
+<details>
+<summary><b>"ModuleNotFoundError: No module named 'server'"</b></summary>
+
+Estás corriendo `uvicorn` desde adentro de la carpeta `server/`. Corrélo desde la raíz del proyecto:
+```bash
+cd ~/ruta/a/Whendo  # NO cd server/
+make dev
+```
+</details>
+
+<details>
+<summary><b>"externally-managed-environment" al hacer pip install</b></summary>
+
+Te olvidaste de activar el venv. Hacé:
+```bash
+source .venv/bin/activate
+# Ahora deberías ver (.venv) en tu prompt
+which python  # debería apuntar a .venv/bin/python
+```
+</details>
+
+<details>
+<summary><b>La web muestra "Could not reach backend"</b></summary>
+
+El frontend no puede hablar con el backend. Asegurate de que la Terminal 1 sigue corriendo y verificá:
+```bash
+curl http://localhost:8000/health
+```
+Si eso falla, el backend se cayó — mirá los logs en Terminal 1.
+</details>
+
+<details>
+<summary><b>Puerto 8000 o 3000 ya en uso</b></summary>
+
+Algo más está usando ese puerto. Matálo:
+```bash
+kill -9 $(lsof -t -i:8000)
+kill -9 $(lsof -t -i:3000)
+```
+</details>
+
+---
 
 ## 📚 Ejemplos
 
-Recipes reales que vienen en [`examples/`](../examples). Copiá, ajustá, ejecutá.
+Recipes reales que vienen en [`examples/`](../examples). Ver el [README en inglés](../README.md#-examples) para el catálogo completo.
 
-Ver el [README en inglés](../README.md#examples) para el catálogo completo.
+---
 
 ## 🤝 Contribuir
 
-PRs bienvenidos, especialmente para nuevos sources y actions — cada uno es ~100 líneas. Ver [CONTRIBUTING.md](../CONTRIBUTING.md).
+PRs bienvenidos. Cada source/action nuevo es ~100 líneas. Ver [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-Dale ⭐ al repo si te sirve. Es la única métrica que me importa.
+Dale ⭐ al repo si te sirve — es la única métrica que me importa.
+
+---
 
 ## 📜 Licencia
 

@@ -19,7 +19,7 @@ export type RecipeSummary = {
   when: WhenBlock;
   source: string | null;
   action: string;
-  next_run: string | null; // ISO datetime
+  next_run: string | null;
 };
 
 export type LoadError = {
@@ -46,31 +46,54 @@ async function call<T>(path: string, opts: FetchOpts = {}): Promise<T> {
     body: opts.body ? JSON.stringify(opts.body) : undefined,
     cache: opts.cache ?? "no-store",
   });
+
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(
-      `${res.status} ${res.statusText}${text ? `: ${text}` : ""}`,
-    );
+    // Try to extract the structured `detail` field from FastAPI errors.
+    let detail = "";
+    try {
+      const data = await res.json();
+      detail = typeof data?.detail === "string" ? data.detail : JSON.stringify(data);
+    } catch {
+      detail = await res.text().catch(() => "");
+    }
+    throw new Error(`${res.status}: ${detail || res.statusText}`);
   }
-  // Treat 204 No Content gracefully.
+
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
 }
 
 export const api = {
   health: () => call<{ status: string }>("/health"),
+
   listRecipes: () => call<RecipeSummary[]>("/api/recipes"),
+
   listErrors: () => call<LoadError[]>("/api/recipes/errors"),
+
   reloadRecipes: () =>
     call<{ loaded: number; errors: number; error_files: string[] }>(
       "/api/recipes/reload",
       { method: "POST" },
     ),
+
   runNow: (name: string) =>
     call<{ status: string; recipe: string }>(
       `/api/recipes/${encodeURIComponent(name)}/run`,
       { method: "POST" },
     ),
+
+  createRecipe: (yamlText: string) =>
+    call<{ status: string; name: string; file: string }>("/api/recipes", {
+      method: "POST",
+      body: { yaml: yamlText },
+    }),
+
+  deleteRecipe: (name: string) =>
+    call<{ status: string; name: string; file: string }>(
+      `/api/recipes/${encodeURIComponent(name)}`,
+      { method: "DELETE" },
+    ),
+
   listRuns: (params: { recipe?: string; limit?: number } = {}) => {
     const qs = new URLSearchParams();
     if (params.recipe) qs.set("recipe", params.recipe);

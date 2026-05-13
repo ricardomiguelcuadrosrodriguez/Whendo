@@ -1,10 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { History } from "lucide-react";
 
+import { useLocale } from "@/lib/locale-context";
 import { TerminalHeader } from "@/components/TerminalHeader";
 import { RecipesList } from "@/components/RecipesList";
 
 export default function HomePage() {
+  const { t } = useLocale();
+
   return (
     <main>
       <TerminalHeader />
@@ -12,11 +17,11 @@ export default function HomePage() {
       <nav className="border-b border-border bg-bg-elevated">
         <div className="mx-auto flex max-w-6xl items-center gap-1 px-6">
           <NavLink href="/" active>
-            recipes
+            {t("nav.recipes")}
           </NavLink>
           <NavLink href="/runs">
             <History className="h-3 w-3" />
-            runs
+            {t("nav.runs")}
           </NavLink>
         </div>
       </nav>
@@ -25,7 +30,7 @@ export default function HomePage() {
 
       <footer className="border-t border-border py-6 text-center">
         <p className="font-mono text-xs text-ink-muted">
-          <span className="text-lime">$</span> whendo v0.1.0 ·{" "}
+          <span className="text-lime">$</span> {t("footer.version")} ·{" "}
           <a
             href="https://github.com/ricardomiguelcuadrosrodriguez/Whendo"
             target="_blank"

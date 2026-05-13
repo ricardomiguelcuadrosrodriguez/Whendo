@@ -19,19 +19,19 @@ help:
 	@echo "  make clean        Remove caches and the local DB"
 
 install:
-	cd server && pip install -r requirements.txt
+	pip install -r server/requirements.txt
 
 install-web:
 	cd web && npm install
 
 dev:
-	cd server && python -m uvicorn server.main:app --reload --host 0.0.0.0 --port 8000
+	python -m uvicorn server.main:app --reload --host 0.0.0.0 --port 8000 --reload-dir server
 
 dev-web:
 	cd web && npm run dev
 
 test:
-	cd server && pytest -v
+	pytest -v server/tests
 
 up:
 	docker compose up --build
