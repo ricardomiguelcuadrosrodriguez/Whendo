@@ -1,27 +1,47 @@
-"""Recipe schema. The heart of whendo.
+"""Schema definitions for whendo.
 
-A Recipe is a YAML file with three blocks:
-    when:  the trigger (a schedule, a webhook, a poll interval)
-    if:    optional source + condition (check weather, RSS, etc.)
-    then:  the action (send a notification, hit a webhook, etc.)
+Two kinds of models live here:
+- Pydantic models (Recipe, etc.) — used to validate YAML and API payloads.
+- SQLAlchemy models (Run, SourceState) — persisted in SQLite.
 """
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
-from pydantic import BaseModel, Field
 
+from pydantic import BaseModel, Field
+from sqlalchemy import JSON, DateTime, Integer, String, Text
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+# ---------------------------------------------------------------------------
+# Pydantic models — for recipe YAML validation
+# ---------------------------------------------------------------------------
 
 class WhenBlock(BaseModel):
-    """When should we check? (the trigger)"""
-    every: str | None = None      # "day at 7am" | "5 minutes" | cron expression
-    webhook: str | None = None    # path for a webhook trigger
-    on_startup: bool = False      # run once at server start
+    """When should we check? (the trigger).
+
+    Exactly one of `every`, `webhook`, or `on_startup` must be set.
+    """
+
+    every: str | None = None
+    """A schedule expression. Supported forms:
+       - 'day at HH:MM'                 → daily at that local time
+       - 'weekday at HH:MM'             → e.g. 'monday at 9am'
+       - 'N minutes' | 'N hours' | 'N days'
+       - any valid cron expression: '0 7 * * *'
+    """
+    webhook: str | None = None
+    """A path that fires this recipe when POST'd to /webhooks/<path>."""
+    on_startup: bool = False
+    """Run once when the server starts."""
 
     model_config = {"extra": "forbid"}
 
 
 class IfBlock(BaseModel):
-    """Optional condition source. Exactly one source key must be set."""
+    """Optional source + condition. Exactly one source key must be set."""
+
     weather: dict[str, Any] | None = None
     rss: dict[str, Any] | None = None
     github_releases: dict[str, Any] | None = None
@@ -29,11 +49,12 @@ class IfBlock(BaseModel):
     web_scrape: dict[str, Any] | None = None
     http_get: dict[str, Any] | None = None
 
-    model_config = {"extra": "allow"}  # allow future sources without schema bumps
+    model_config = {"extra": "allow"}
 
 
 class ThenBlock(BaseModel):
-    """The action to run. Exactly one action key must be set."""
+    """The action. Exactly one action key must be set."""
+
     notify_telegram: dict[str, Any] | None = None
     notify_ntfy: dict[str, Any] | None = None
     notify_email: dict[str, Any] | None = None
@@ -47,8 +68,9 @@ class ThenBlock(BaseModel):
 
 
 class Recipe(BaseModel):
-    """A complete recipe loaded from YAML."""
-    name: str = Field(..., description="Human-readable name")
+    """A complete recipe loaded from a YAML file."""
+
+    name: str = Field(..., min_length=1, description="Human-readable name")
     description: str | None = None
     enabled: bool = True
     when: WhenBlock
@@ -57,12 +79,51 @@ class Recipe(BaseModel):
 
     model_config = {"populate_by_name": True}
 
+    @property
+    def source_name(self) -> str | None:
+        """Returns the active source key, e.g. 'weather'."""
+        if not self.if_:
+            return None
+        for k, v in self.if_.model_dump(exclude_none=True).items():
+            return k
+        return None
 
-class RecipeRun(BaseModel):
+    @property
+    def action_name(self) -> str:
+        """Returns the active action key, e.g. 'notify_telegram'."""
+        for k, v in self.then.model_dump(exclude_none=True).items():
+            return k
+        raise ValueError(f"Recipe '{self.name}' has no action configured")
+
+
+# ---------------------------------------------------------------------------
+# SQLAlchemy models — for persistence
+# ---------------------------------------------------------------------------
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Run(Base):
     """One execution of a recipe."""
-    recipe_name: str
-    started_at: str
-    finished_at: str | None = None
-    status: str  # "success" | "failed" | "skipped" | "running"
-    error: str | None = None
-    output: dict[str, Any] | None = None
+
+    __tablename__ = "runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    recipe_name: Mapped[str] = mapped_column(String(255), index=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime, index=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    status: Mapped[str] = mapped_column(String(20))  # success|failed|skipped|running
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    output: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+
+
+class SourceState(Base):
+    """Per-recipe state for sources that need memory (e.g. 'last RSS item seen')."""
+
+    __tablename__ = "source_state"
+
+    recipe_name: Mapped[str] = mapped_column(String(255), primary_key=True)
+    key: Mapped[str] = mapped_column(String(255), primary_key=True)
+    value: Mapped[dict] = mapped_column(JSON)
+    updated_at: Mapped[datetime] = mapped_column(DateTime)

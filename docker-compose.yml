@@ -27,10 +27,7 @@ services:
     ports:
       - "${WHENDO_WEB_PORT:-3000}:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://whendo-server:8000
+      - WHENDO_API_URL=http://whendo-server:8000
     depends_on:
-      - whendo-server
-
-volumes:
-  data:
-  recipes:
+      whendo-server:
+        condition: service_healthy

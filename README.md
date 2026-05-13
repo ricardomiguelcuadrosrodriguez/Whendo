@@ -1,6 +1,8 @@
 <div align="center">
 
-# ⏰ whendo
+<img src="./assets/logo.png" alt="whendo" width="180" />
+
+# whendo
 
 ### *Tell your computer when to do things. In plain English.*
 

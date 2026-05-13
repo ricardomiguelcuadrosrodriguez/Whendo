@@ -1,23 +1,41 @@
-"""whendo — main FastAPI server."""
+"""whendo — FastAPI server entrypoint."""
+from __future__ import annotations
+
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from server.api import health, recipes, runs
 from server.config import settings
+from server.db.connection import init_db
 from server.scheduler.engine import SchedulerEngine
-from server.api import recipes, runs, health
 
 
-scheduler = SchedulerEngine()
+logging.basicConfig(
+    level=settings.log_level,
+    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
+)
+logger = logging.getLogger("whendo")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Start/stop the scheduler with the app."""
+    """Initialise DB + scheduler at startup; tear down at shutdown."""
+    logger.info(f"whendo starting (tz={settings.timezone})")
+
+    init_db()
+
+    scheduler = SchedulerEngine()
+    app.state.scheduler = scheduler
     await scheduler.start()
-    await scheduler.load_recipes_from_disk(settings.recipes_dir)
+    result = await scheduler.load_recipes_from_disk(settings.recipes_dir)
+    logger.info(f"Recipes: {result.summary}")
+
     yield
+
+    logger.info("whendo shutting down")
     await scheduler.shutdown()
 
 
@@ -42,4 +60,10 @@ app.include_router(runs.router, prefix="/api/runs", tags=["runs"])
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("server.main:app", host="0.0.0.0", port=settings.port, reload=True)
+
+    uvicorn.run(
+        "server.main:app",
+        host="0.0.0.0",
+        port=settings.port,
+        reload=True,
+    )
