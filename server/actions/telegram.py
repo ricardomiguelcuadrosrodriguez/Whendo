@@ -6,6 +6,7 @@ from typing import Any
 from telegram import Bot
 from telegram.constants import ParseMode
 
+from server import settings_service
 from server.actions.base import Action
 from server.config import settings
 
@@ -14,8 +15,16 @@ class TelegramAction(Action):
     name = "notify_telegram"
 
     async def run(self, config: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
-        bot_token = config.get("bot_token") or settings.telegram_bot_token
-        chat_id = config.get("chat_id") or settings.telegram_default_chat_id
+        bot_token = settings_service.resolve(
+            "telegram.bot_token",
+            recipe_override=config.get("bot_token"),
+            env_fallback=settings.telegram_bot_token or None,
+        )
+        chat_id = settings_service.resolve(
+            "telegram.default_chat_id",
+            recipe_override=config.get("chat_id"),
+            env_fallback=settings.telegram_default_chat_id or None,
+        )
         message = config.get("message", "")
         parse_mode_str = config.get("parse_mode")
 

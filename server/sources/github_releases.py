@@ -6,6 +6,7 @@ from typing import Any
 
 import httpx
 
+from server import settings_service
 from server.config import settings
 from server.db.connection import get_session
 from server.db.schema import SourceState
@@ -28,7 +29,11 @@ class GithubReleasesSource(Source):
             raise RuntimeError("github_releases requires 'repo' in 'owner/name' form")
 
         include_prereleases = bool(config.get("include_prereleases", False))
-        token = config.get("token") or settings.github_token
+        token = settings_service.resolve(
+            "github.token",
+            recipe_override=config.get("token"),
+            env_fallback=settings.github_token or None,
+        )
 
         headers = {"Accept": "application/vnd.github+json"}
         if token:

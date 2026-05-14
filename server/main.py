@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from server.api import health, recipes, runs
+from server.api import health, recipes, runs, settings as settings_api
 from server.config import settings
 from server.db.connection import init_db
 from server.scheduler.engine import SchedulerEngine
@@ -56,6 +56,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(recipes.router, prefix="/api/recipes", tags=["recipes"])
 app.include_router(runs.router, prefix="/api/runs", tags=["runs"])
+app.include_router(settings_api.router, prefix="/api/settings", tags=["settings"])
 
 
 if __name__ == "__main__":

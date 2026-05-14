@@ -99,7 +99,39 @@ type TranslationKey =
   | "action.notify_whatsapp"
   | "action.webhook_post"
   | "action.llm_summarize_and_notify"
-  | "action.run_shell";
+  | "action.run_shell"
+  // Nav
+  | "nav.settings"
+  // Settings page
+  | "settings.title"
+  | "settings.subtitle"
+  | "settings.loading"
+  | "settings.save"
+  | "settings.saving"
+  | "settings.saved"
+  | "settings.clear"
+  | "settings.configured"
+  | "settings.not_configured"
+  | "settings.cat.notifications"
+  | "settings.cat.data_sources"
+  | "settings.cat.ai"
+  | "settings.cat.notifications_hint"
+  | "settings.cat.data_sources_hint"
+  | "settings.cat.ai_hint"
+  | "settings.empty_keep_existing"
+  // Security panel
+  | "settings.security.title"
+  | "settings.security.status_no_master"
+  | "settings.security.status_locked"
+  | "settings.security.status_unlocked"
+  | "settings.security.set_master"
+  | "settings.security.unlock"
+  | "settings.security.lock"
+  | "settings.security.change_master"
+  | "settings.security.master_placeholder"
+  | "settings.security.master_new_placeholder"
+  | "settings.security.master_help"
+  | "settings.security.locked_warning";
 
 type Translations = Record<Locale, Record<TranslationKey, string>>;
 
@@ -195,6 +227,45 @@ export const TRANSLATIONS: Translations = {
     "action.webhook_post": "POST to a webhook",
     "action.llm_summarize_and_notify": "Summarize with AI and notify",
     "action.run_shell": "Run a shell command",
+    "nav.settings": "settings",
+    "settings.title": "// settings",
+    "settings.subtitle":
+      "Configure the credentials and API keys whendo needs. Stored locally in your database — never sent anywhere else.",
+    "settings.loading": "loading settings",
+    "settings.save": "save",
+    "settings.saving": "saving",
+    "settings.saved": "saved ✓",
+    "settings.clear": "clear",
+    "settings.configured": "configured",
+    "settings.not_configured": "not configured",
+    "settings.cat.notifications": "Notifications",
+    "settings.cat.data_sources": "Data sources",
+    "settings.cat.ai": "AI",
+    "settings.cat.notifications_hint":
+      "Where whendo sends you messages (Telegram, ntfy, email, etc.).",
+    "settings.cat.data_sources_hint":
+      "Read-only API keys for external services whendo can monitor.",
+    "settings.cat.ai_hint":
+      "Provider used by the natural-language parser (coming soon).",
+    "settings.empty_keep_existing":
+      "(leave empty to keep current value)",
+    "settings.security.title": "Security",
+    "settings.security.status_no_master":
+      "No master password set. Secrets are stored as plain text in your local database.",
+    "settings.security.status_locked":
+      "Locked. Unlock with your master password to view and use secrets.",
+    "settings.security.status_unlocked":
+      "Unlocked. Secrets are decrypted in memory for this server process.",
+    "settings.security.set_master": "Set master password",
+    "settings.security.unlock": "Unlock",
+    "settings.security.lock": "Lock",
+    "settings.security.change_master": "Change master password",
+    "settings.security.master_placeholder": "Master password",
+    "settings.security.master_new_placeholder": "New master password",
+    "settings.security.master_help":
+      "Optional. If you set one, secrets like API keys are encrypted at rest. You will need to unlock after every restart.",
+    "settings.security.locked_warning":
+      "Some settings are encrypted. Unlock first to view or edit them.",
   },
   es: {
     "header.tagline": "dile a tu computadora cuándo hacer cosas",
@@ -288,6 +359,45 @@ export const TRANSLATIONS: Translations = {
     "action.webhook_post": "POST a un webhook",
     "action.llm_summarize_and_notify": "Resumir con IA y notificar",
     "action.run_shell": "Ejecutar un comando del sistema",
+    "nav.settings": "configuración",
+    "settings.title": "// configuración",
+    "settings.subtitle":
+      "Configura las credenciales y API keys que whendo necesita. Se guardan localmente en tu base de datos — nunca se envían a ningún otro lado.",
+    "settings.loading": "cargando configuración",
+    "settings.save": "guardar",
+    "settings.saving": "guardando",
+    "settings.saved": "guardado ✓",
+    "settings.clear": "borrar",
+    "settings.configured": "configurado",
+    "settings.not_configured": "sin configurar",
+    "settings.cat.notifications": "Notificaciones",
+    "settings.cat.data_sources": "Fuentes de datos",
+    "settings.cat.ai": "IA",
+    "settings.cat.notifications_hint":
+      "Por dónde whendo te envía mensajes (Telegram, ntfy, email, etc.).",
+    "settings.cat.data_sources_hint":
+      "API keys de servicios externos que whendo puede monitorear.",
+    "settings.cat.ai_hint":
+      "Proveedor que usa el parser de lenguaje natural (próximamente).",
+    "settings.empty_keep_existing":
+      "(deja vacío para mantener el valor actual)",
+    "settings.security.title": "Seguridad",
+    "settings.security.status_no_master":
+      "No hay contraseña maestra configurada. Los secretos se guardan en texto plano en tu base de datos local.",
+    "settings.security.status_locked":
+      "Bloqueado. Ingresa tu contraseña maestra para ver y usar los secretos.",
+    "settings.security.status_unlocked":
+      "Desbloqueado. Los secretos están descifrados en memoria para este proceso del servidor.",
+    "settings.security.set_master": "Configurar contraseña maestra",
+    "settings.security.unlock": "Desbloquear",
+    "settings.security.lock": "Bloquear",
+    "settings.security.change_master": "Cambiar contraseña maestra",
+    "settings.security.master_placeholder": "Contraseña maestra",
+    "settings.security.master_new_placeholder": "Nueva contraseña maestra",
+    "settings.security.master_help":
+      "Opcional. Si configuras una, los secretos como API keys se cifran en disco. Tendrás que desbloquear después de cada reinicio.",
+    "settings.security.locked_warning":
+      "Algunas configuraciones están cifradas. Desbloquea primero para verlas o editarlas.",
   },
 };
 

@@ -6,6 +6,7 @@ import smtplib
 from email.message import EmailMessage
 from typing import Any
 
+from server import settings_service
 from server.actions.base import Action
 from server.config import settings
 
@@ -14,11 +15,12 @@ class EmailAction(Action):
     name = "notify_email"
 
     async def run(self, config: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
-        host = config.get("smtp_host") or settings.smtp_host
-        port = int(config.get("smtp_port") or settings.smtp_port)
-        user = config.get("smtp_user") or settings.smtp_user
-        password = config.get("smtp_pass") or settings.smtp_pass
-        sender = config.get("from") or settings.smtp_from or user
+        host = settings_service.resolve("smtp.host", recipe_override=config.get("smtp_host"), env_fallback=settings.smtp_host or None)
+        port_value = settings_service.resolve("smtp.port", recipe_override=str(config["smtp_port"]) if config.get("smtp_port") else None, env_fallback=str(settings.smtp_port))
+        port = int(port_value or 587)
+        user = settings_service.resolve("smtp.user", recipe_override=config.get("smtp_user"), env_fallback=settings.smtp_user or None)
+        password = settings_service.resolve("smtp.pass", recipe_override=config.get("smtp_pass"), env_fallback=settings.smtp_pass or None)
+        sender = settings_service.resolve("smtp.from", recipe_override=config.get("from"), env_fallback=settings.smtp_from or None) or user
         recipient = config.get("to")
         subject = config.get("subject", "")
         body = config.get("body", "")

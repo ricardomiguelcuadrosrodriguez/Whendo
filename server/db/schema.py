@@ -127,3 +127,30 @@ class SourceState(Base):
     key: Mapped[str] = mapped_column(String(255), primary_key=True)
     value: Mapped[dict] = mapped_column(JSON)
     updated_at: Mapped[datetime] = mapped_column(DateTime)
+
+
+class AppSetting(Base):
+    """One configurable setting, e.g. telegram.bot_token.
+
+    `value` holds either plain text (non-secrets, or secrets when no master
+    password has been set) or a Fernet token string (secrets after a master
+    password is in place). `is_encrypted` lets the service decide which path.
+    """
+
+    __tablename__ = "app_setting"
+
+    key: Mapped[str] = mapped_column(String(255), primary_key=True)
+    value: Mapped[str] = mapped_column(Text)
+    is_secret: Mapped[bool] = mapped_column()
+    is_encrypted: Mapped[bool] = mapped_column()
+    updated_at: Mapped[datetime] = mapped_column(DateTime)
+
+
+class AppMeta(Base):
+    """Single-row table for app-wide metadata (master password salt/verifier)."""
+
+    __tablename__ = "app_meta"
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    value: Mapped[str] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(DateTime)

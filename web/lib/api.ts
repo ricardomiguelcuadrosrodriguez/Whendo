@@ -37,6 +37,30 @@ export type Run = {
   output: Record<string, unknown> | null;
 };
 
+export type SettingItem = {
+  key: string;
+  label: string;
+  category: "notifications" | "data_sources" | "ai";
+  is_secret: boolean;
+  default: string | null;
+  description: string | null;
+  placeholder: string | null;
+  is_set: boolean;
+  value: string | null;
+};
+
+export type SettingsStatus = {
+  has_master_password: boolean;
+  is_unlocked: boolean;
+  secret_count: number;
+  encrypted_count: number;
+};
+
+export type SettingsListResponse = {
+  items: SettingItem[];
+  status: SettingsStatus;
+};
+
 type FetchOpts = { method?: string; body?: unknown; cache?: RequestCache };
 
 async function call<T>(path: string, opts: FetchOpts = {}): Promise<T> {
@@ -101,4 +125,41 @@ export const api = {
     const suffix = qs.toString() ? `?${qs}` : "";
     return call<Run[]>(`/api/runs${suffix}`);
   },
+
+  listSettings: () => call<SettingsListResponse>("/api/settings"),
+
+  settingsStatus: () => call<SettingsStatus>("/api/settings/_status"),
+
+  saveSetting: (key: string, value: string) =>
+    call<{ status: string; key: string }>(
+      `/api/settings/${encodeURIComponent(key)}`,
+      { method: "PUT", body: { value } },
+    ),
+
+  deleteSetting: (key: string) =>
+    call<{ status: string; key: string }>(
+      `/api/settings/${encodeURIComponent(key)}`,
+      { method: "DELETE" },
+    ),
+
+  setMasterPassword: (password: string) =>
+    call<{ status: string }>("/api/settings/_set-master", {
+      method: "POST",
+      body: { password },
+    }),
+
+  unlockSettings: (password: string) =>
+    call<{ status: string }>("/api/settings/_unlock", {
+      method: "POST",
+      body: { password },
+    }),
+
+  lockSettings: () =>
+    call<{ status: string }>("/api/settings/_lock", { method: "POST" }),
+
+  changeMasterPassword: (old_password: string, new_password: string) =>
+    call<{ status: string }>("/api/settings/_change-master", {
+      method: "POST",
+      body: { old_password, new_password },
+    }),
 };

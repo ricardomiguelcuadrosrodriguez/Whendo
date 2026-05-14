@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { History } from "lucide-react";
+import { Cog, History } from "lucide-react";
 
 import { useLocale } from "@/lib/locale-context";
 import { TerminalHeader } from "@/components/TerminalHeader";
@@ -22,6 +22,10 @@ export default function HomePage() {
           <NavLink href="/runs">
             <History className="h-3 w-3" />
             {t("nav.runs")}
+          </NavLink>
+          <NavLink href="/settings">
+            <Cog className="h-3 w-3" />
+            {t("nav.settings")}
           </NavLink>
         </div>
       </nav>

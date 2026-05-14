@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   ChevronRight,
   CircleDashed,
+  Cog,
   History,
   RefreshCw,
   XCircle,
@@ -60,6 +61,13 @@ export default function RunsPage() {
             <History className="h-3 w-3" />
             {t("nav.runs")}
           </span>
+          <Link
+            href="/settings"
+            className="flex items-center gap-1.5 border-b-2 border-transparent px-3 py-3 font-mono text-xs text-ink-dim transition-colors hover:text-ink"
+          >
+            <Cog className="h-3 w-3" />
+            {t("nav.settings")}
+          </Link>
         </div>
       </nav>
 

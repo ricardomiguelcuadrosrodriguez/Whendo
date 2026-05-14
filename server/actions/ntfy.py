@@ -5,6 +5,7 @@ from typing import Any
 
 import httpx
 
+from server import settings_service
 from server.actions.base import Action
 from server.config import settings
 
@@ -13,8 +14,16 @@ class NtfyAction(Action):
     name = "notify_ntfy"
 
     async def run(self, config: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
-        server = config.get("server") or settings.ntfy_server
-        topic = config.get("topic") or settings.ntfy_default_topic
+        server = settings_service.resolve(
+            "ntfy.server",
+            recipe_override=config.get("server"),
+            env_fallback=settings.ntfy_server or None,
+        ) or "https://ntfy.sh"
+        topic = settings_service.resolve(
+            "ntfy.default_topic",
+            recipe_override=config.get("topic"),
+            env_fallback=settings.ntfy_default_topic or None,
+        )
         message = config.get("message", "")
         title = config.get("title")
         priority = config.get("priority")

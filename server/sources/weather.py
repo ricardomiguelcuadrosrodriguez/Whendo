@@ -13,6 +13,7 @@ from typing import Any
 
 import httpx
 
+from server import settings_service
 from server.config import settings
 from server.sources.base import Source
 
@@ -32,7 +33,11 @@ class WeatherSource(Source):
     ) -> tuple[bool, dict[str, Any]]:
         location = config.get("location")
         condition = config.get("condition", "rain_today")
-        api_key = config.get("api_key") or settings.openweather_api_key
+        api_key = settings_service.resolve(
+            "openweather.api_key",
+            recipe_override=config.get("api_key"),
+            env_fallback=settings.openweather_api_key or None,
+        )
 
         if not location:
             raise RuntimeError("weather source requires 'location' (e.g. 'Lima, PE')")
