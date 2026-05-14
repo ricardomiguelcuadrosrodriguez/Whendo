@@ -101,6 +101,46 @@
 
 ---
 
+## Session 2.5 — Settings UI (May 14, 2026)
+
+**Worked on:** Replacing the `.env`-only configuration with a proper Settings store + web UI, since end users are not programmers and shouldn't have to edit dotfiles.
+
+**Done:**
+- Backend: persistent settings store
+  - `cryptography>=43` added to `server/requirements.txt`
+  - New tables `app_setting` (key, value, is_secret, is_encrypted, updated_at) and `app_meta` (master salt / verifier / KDF iters)
+  - `server/settings_service.py` with:
+    - `SETTINGS_CATALOG` declaring 22 user-configurable keys across 3 categories (notifications, data_sources, ai)
+    - Optional master password (PBKDF2-SHA256 with 600k iters → Fernet key, stored only in memory)
+    - `init_master_password`, `unlock`, `lock`, `change_master_password` (re-encrypts all secrets)
+    - `set/get/delete/is_set/list_visible` (secrets masked as `••••••` in list)
+    - `resolve(key, recipe_override, env_fallback)` for the runtime resolver
+  - `server/api/settings.py` with REST endpoints: list, _status, PUT/DELETE per-key, _set-master, _unlock, _lock, _change-master
+  - Refactored Telegram / ntfy / Email actions and Weather / GitHub Releases sources to read credentials via `settings_service.resolve(...)` so the priority is `recipe override → DB → .env → error`
+- Frontend: `/settings` page
+  - `web/lib/api.ts` extended with `listSettings`, `settingsStatus`, `saveSetting`, `deleteSetting`, `setMasterPassword`, `unlockSettings`, `lockSettings`, `changeMasterPassword`
+  - `web/app/settings/page.tsx`: Security panel (status, set master / unlock / lock / change master) and per-service cards grouped by category, with masked password inputs for secrets, "configured / not configured" badges, per-card save buttons, "leave empty to keep current" UX for already-set secrets
+  - Settings link added to the nav on `/` and `/runs`
+  - 31 new i18n keys (EN/ES) for nav.settings and settings.*
+- Tests
+  - 14 new pytest cases in `test_settings_service.py` covering plain roundtrip, master init re-encrypts existing secrets, lock/unlock, wrong password, change master re-encrypts, runtime resolver priority — **61/61 total backend tests pass**
+- End-to-end API smoke (via FastAPI TestClient):
+  - GET /api/settings → 22 catalog items returned, secrets masked
+  - PUT plain + PUT secret + GET → secret value is `••••••` in list, ntfy plain is the real value
+  - POST /_set-master → encrypted_count goes 0 → 1 (existing secret encrypted in place)
+  - Lock → unlock works; wrong password returns 401; unknown key returns 404
+- TypeScript `tsc --noEmit` clean
+
+**Bugs encountered + fixes:**
+- During the i18n edit, the IDE diagnostic reported missing keys on the `en` / `es` objects between sequential edits to the type union and the two locale blocks — false positive that cleared once all three edits landed. Confirmed clean with `tsc --noEmit`.
+
+**State at end of session:**
+- A non-programmer can now open `/settings`, paste their Telegram bot token + chat ID, hit Save and have whendo send a real message. They never need to touch `.env`.
+- Master password is optional — if not set, secrets are stored as plain text in the local SQLite DB (same security surface as the previous `.env`). If set, secrets are Fernet-encrypted on disk and require an unlock after each server restart.
+- Sources / actions fall back to `.env` when a DB value isn't present, so existing `.env`-only setups keep working.
+
+---
+
 ## Session 3 — Frontend polish (NEXT)
 
 **Goal:** Recipe detail page + live logs.
